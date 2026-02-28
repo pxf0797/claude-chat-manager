@@ -31,16 +31,25 @@
 ```
 claude-chat-manager/
 ├── README.md                          # 项目说明
-├── Claude-Code-Chat-Management-Scheme.md  # 完整方案文档
-├── Quick-Start-Guide.md               # 快速开始指南
-├── view-chats.sh                      # 查看工具
-├── chat-explorer.sh                   # 交互式浏览器
-├── export-to-obsidian.sh              # 基础导出工具
-├── export-enhanced.sh                 # 增强导出工具
-├── chat-monitor.sh                    # 自动监控工具
-├── install-chat-tools.sh              # 安装脚本
-├── test-chat-tools.sh                 # 测试脚本
-└── .gitignore                         # Git忽略文件
+├── CONTRIBUTING.md                    # 贡献指南
+├── CHANGELOG.md                       # 更新日志
+├── LICENSE                            # MIT许可证
+├── .gitignore                         # Git忽略配置
+├── scripts/                           # 脚本目录
+│   ├── view-chats.sh                  # 查看工具
+│   ├── chat-explorer.sh               # 交互式浏览器
+│   ├── export-to-obsidian.sh          # 基础导出工具
+│   ├── export-enhanced.sh             # 增强导出工具
+│   ├── chat-monitor.sh                # 自动监控工具
+│   ├── install-chat-tools.sh          # 安装脚本
+│   ├── test-chat-tools.sh             # 测试脚本
+│   └── init-repo.sh                   # 仓库初始化工具
+├── docs/                              # 文档目录
+│   ├── Claude-Code-Chat-Management-Scheme.md  # 完整方案文档
+│   ├── Quick-Start-Guide.md           # 快速开始指南
+│   └── GITHUB_SETUP.md                # GitHub设置指南
+├── examples/                          # 示例目录（预留）
+└── templates/                         # 模板目录（预留）
 ```
 
 ## 🚀 快速开始
@@ -61,8 +70,8 @@ claude-chat-manager/
 
 2. **运行安装脚本**
    ```bash
-   chmod +x *.sh
-   ./install-chat-tools.sh install
+   chmod +x scripts/*.sh
+   ./scripts/install-chat-tools.sh install
    ```
 
 3. **配置环境变量**
@@ -75,7 +84,7 @@ claude-chat-manager/
 
 4. **测试安装**
    ```bash
-   ./test-chat-tools.sh
+   ./scripts/test-chat-tools.sh
    ```
 
 ## 📖 使用指南
@@ -106,7 +115,7 @@ claude-export --date $(date "+%Y-%m-%d")
 claude-export --range 2024-01-01 2024-01-15
 
 # 使用增强导出（推荐）
-./export-enhanced.sh --recent 10
+./scripts/export-enhanced.sh --recent 10
 ```
 
 ### 自动监控
@@ -290,7 +299,7 @@ tags: [claude/conversation, date/2024-01-15, topic/claude-code]
 export CLAUDE_DEBUG=true
 
 # 查看详细错误信息
-./chat-monitor.sh once 2>&1 | tee debug.log
+./scripts/chat-monitor.sh once 2>&1 | tee debug.log
 
 # 检查日志文件
 tail -f ~/.claude-chat-monitor.log

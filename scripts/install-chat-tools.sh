@@ -163,8 +163,8 @@ copy_scripts() {
 
     # 复制配置文件
     for config in "${config_files[@]}"; do
-        if [ -f "$SCRIPT_DIR/$config" ]; then
-            cp "$SCRIPT_DIR/$config" "$TOOLS_DIR/config/"
+        if [ -f "$SCRIPT_DIR/../docs/$config" ]; then
+            cp "$SCRIPT_DIR/../docs/$config" "$TOOLS_DIR/config/"
             print_success "复制: $config"
         fi
     done
