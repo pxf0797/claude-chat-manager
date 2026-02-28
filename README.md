@@ -157,8 +157,38 @@ claude-log 50
 
 ### 配置文件
 
-安装后会在 `$HOME/claude-chat-tools/config/` 目录生成配置文件：
+支持多种配置方式（按优先级从高到低）：
+1. **环境变量**：临时覆盖配置
+2. **用户配置文件**：`$HOME/claude-chat-tools/config/claude-chat-tools.conf`
+3. **项目配置文件**：项目根目录下的 `config/claude-chat-tools.conf`
+4. **默认值**：内置默认配置
 
+#### 创建配置文件
+```bash
+# 从示例文件创建配置文件
+cp config/claude-chat-tools.conf.example config/claude-chat-tools.conf
+
+# 编辑配置文件
+nano config/claude-chat-tools.conf
+```
+
+#### 配置文件示例
+```bash
+# Obsidian 配置
+OBSIDIAN_VAULT="$HOME/Obsidian"  # Obsidian仓库路径
+EXPORT_DIR="${OBSIDIAN_VAULT}/Claude-Chats"  # 导出目录
+
+# 导出配置
+EXPORT_FORMAT="enhanced"  # basic 或 enhanced
+
+# 监控配置
+MONITOR_INTERVAL=300  # 检查间隔（秒）
+MONITOR_ENABLED=true
+
+# 其他配置...
+```
+
+安装后会在 `$HOME/claude-chat-tools/config/` 目录生成配置文件：
 - `claude-chat-tools.conf` - 主配置文件
 - `Claude-Code-Chat-Management-Scheme.md` - 完整方案文档
 

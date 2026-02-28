@@ -1,9 +1,14 @@
 #!/bin/bash
 # chat-monitor.sh - 监控新对话并自动导出
 
-# 配置
+# 配置工具
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-OBSIDIAN_VAULT="${CLAUDE_OBSIDIAN_VAULT:-$HOME/Obsidian}"
+source "$SCRIPT_DIR/../utils/config-utils.sh" 2>/dev/null || {
+    echo "⚠️  配置工具未找到，使用默认配置" >&2
+}
+
+# 获取Obsidian仓库路径
+OBSIDIAN_VAULT=$(get_obsidian_vault 2>/dev/null || echo "${CLAUDE_OBSIDIAN_VAULT:-$HOME/Obsidian}")
 EXPORT_SCRIPT="$SCRIPT_DIR/../export/export-enhanced.sh"
 LAST_CHECK_FILE="$HOME/.claude-chat-last-check"
 LOG_FILE="$HOME/.claude-chat-monitor.log"

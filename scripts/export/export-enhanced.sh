@@ -1,8 +1,14 @@
 #!/bin/bash
 # export-enhanced.sh - 增强版导出，支持双链笔记特性
 
-# 配置
-VAULT_PATH="${CLAUDE_OBSIDIAN_VAULT:-$HOME/Obsidian}"
+# 配置工具
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../utils/config-utils.sh" 2>/dev/null || {
+    echo "⚠️  配置工具未找到，使用默认配置"
+}
+
+# 获取Obsidian仓库路径
+VAULT_PATH=$(get_obsidian_vault 2>/dev/null || echo "${CLAUDE_OBSIDIAN_VAULT:-$HOME/Obsidian}")
 EXPORT_BASE="$VAULT_PATH/Claude-Chats"
 
 # 检查依赖
@@ -17,7 +23,26 @@ check_dependencies() {
 
     if [ ! -d "$VAULT_PATH" ]; then
         echo "❌ 未找到Obsidian仓库: $VAULT_PATH"
-        echo "请设置环境变量: export CLAUDE_OBSIDIAN_VAULT=/path/to/your/obsidian"
+        echo ""
+        echo "请选择以下配置方式之一："
+        echo ""
+        echo "1. 设置环境变量:"
+        echo "   export CLAUDE_OBSIDIAN_VAULT=/path/to/your/obsidian"
+        echo ""
+        echo "2. 创建配置文件:"
+        echo "   cp config/claude-chat-tools.conf.example config/claude-chat-tools.conf"
+        echo "   # 然后编辑配置文件中的 OBSIDIAN_VAULT 设置"
+        echo ""
+        echo "3. 使用默认路径并创建目录:"
+        echo "   mkdir -p \"$HOME/Obsidian\""
+        echo ""
+        echo "当前配置文件搜索路径:"
+        if [ -f "$HOME/claude-chat-tools/config/claude-chat-tools.conf" ]; then
+            echo "   - $HOME/claude-chat-tools/config/claude-chat-tools.conf"
+        fi
+        if [ -f "$SCRIPT_DIR/../../config/claude-chat-tools.conf" ]; then
+            echo "   - $SCRIPT_DIR/../../config/claude-chat-tools.conf"
+        fi
         exit 1
     fi
 

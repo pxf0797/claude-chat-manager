@@ -1,19 +1,42 @@
 #!/bin/bash
 # export-to-obsidian.sh - 导出聊天记录到Obsidian
 
-# 配置
-# 请修改为你的Obsidian仓库路径
-OBSIDIAN_VAULT="${CLAUDE_OBSIDIAN_VAULT:-$HOME/Obsidian}"
+# 配置工具
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../utils/config-utils.sh" 2>/dev/null || {
+    echo "⚠️  配置工具未找到，使用默认配置"
+}
+
+# 获取Obsidian仓库路径
+OBSIDIAN_VAULT=$(get_obsidian_vault 2>/dev/null || echo "${CLAUDE_OBSIDIAN_VAULT:-$HOME/Obsidian}")
 EXPORT_DIR="$OBSIDIAN_VAULT/Claude-Chats"
 
 # 检查配置
 check_config() {
     if [ ! -d "$OBSIDIAN_VAULT" ]; then
         echo "❌ 未找到Obsidian仓库: $OBSIDIAN_VAULT"
-        echo "请执行以下操作之一："
-        echo "1. 设置环境变量: export CLAUDE_OBSIDIAN_VAULT=/path/to/your/obsidian"
-        echo "2. 修改脚本中的 OBSIDIAN_VAULT 变量"
-        echo "3. 创建目录: mkdir -p $OBSIDIAN_VAULT"
+        echo ""
+        echo "请选择以下配置方式之一："
+        echo ""
+        echo "1. 设置环境变量:"
+        echo "   export CLAUDE_OBSIDIAN_VAULT=/path/to/your/obsidian"
+        echo ""
+        echo "2. 创建配置文件:"
+        echo "   cp config/claude-chat-tools.conf.example config/claude-chat-tools.conf"
+        echo "   # 然后编辑配置文件中的 OBSIDIAN_VAULT 设置"
+        echo ""
+        echo "3. 修改脚本中的 OBSIDIAN_VAULT 变量（不推荐）"
+        echo ""
+        echo "4. 使用默认路径并创建目录:"
+        echo "   mkdir -p \"$HOME/Obsidian\""
+        echo ""
+        echo "当前配置文件搜索路径:"
+        if [ -f "$HOME/claude-chat-tools/config/claude-chat-tools.conf" ]; then
+            echo "   - $HOME/claude-chat-tools/config/claude-chat-tools.conf"
+        fi
+        if [ -f "$SCRIPT_DIR/../../config/claude-chat-tools.conf" ]; then
+            echo "   - $SCRIPT_DIR/../../config/claude-chat-tools.conf"
+        fi
         exit 1
     fi
 

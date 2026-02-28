@@ -144,6 +144,8 @@ copy_scripts() {
         "../export/export-enhanced.sh"
         "../monitor/chat-monitor.sh"
         "install-chat-tools.sh"
+        "test-chat-tools.sh"
+        "config-utils.sh"
     )
 
     local config_files=(
