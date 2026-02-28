@@ -8,8 +8,8 @@
 cd ~/claude
 
 # 运行安装脚本
-chmod +x *.sh
-./install-chat-tools.sh install
+find . -name "*.sh" -exec chmod +x {} \;
+./scripts/utils/install-chat-tools.sh install
 ```
 
 ### 第二步：配置环境变量
@@ -28,7 +28,7 @@ source ~/.zshrc
 claude-view
 
 # 或直接运行
-./view-chats.sh
+./scripts/view/view-chats.sh
 ```
 
 ### 第四步：导出到Obsidian
@@ -66,7 +66,7 @@ claude-explore
 claude-export --recent 3
 
 # 增强导出（双链笔记）
-./export-enhanced.sh --recent 5
+./scripts/export/export-enhanced.sh --recent 5
 
 # 指定日期导出
 claude-export --date 2024-01-15
@@ -133,7 +133,7 @@ open "$CLAUDE_OBSIDIAN_VAULT/Claude-Chats"
 ### 场景2：项目整理
 ```bash
 # 导出特定项目的所有对话
-./view-chats.sh  # 查看项目名称
+./scripts/view/view-chats.sh  # 查看项目名称
 # 然后手动导出相关文件
 ```
 
@@ -200,7 +200,7 @@ export CLAUDE_OBSIDIAN_VAULT="$HOME/Library/Mobile Documents/iCloud~md~obsidian/
 chmod +x ~/claude/*.sh
 
 # 如果使用安装脚本
-./install-chat-tools.sh install
+./scripts/utils/install-chat-tools.sh install
 ```
 
 ### 问题4：导出文件为空
@@ -235,7 +235,7 @@ for i in {0..6}; do
 done
 
 # 生成周报
-./export-enhanced.sh --update
+./scripts/export/export-enhanced.sh --update
 ```
 
 ## 📚 扩展学习
@@ -248,8 +248,8 @@ done
 
 2. **探索脚本功能**：
    ```bash
-   ./export-enhanced.sh --help
-   ./chat-monitor.sh help
+   ./scripts/export/export-enhanced.sh --help
+   ./scripts/monitor/chat-monitor.sh help
    ```
 
 3. **自定义配置**：
@@ -266,7 +266,7 @@ done
 
 ### 第一步：运行测试
 ```bash
-./test-chat-tools.sh
+./scripts/utils/test-chat-tools.sh
 ```
 
 ### 第二步：初次导出

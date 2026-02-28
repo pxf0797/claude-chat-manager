@@ -1,0 +1,25 @@
+# Claude Chat Tools 配置文件示例
+# 复制此文件为 claude-chat-tools.conf 并修改配置
+
+# Obsidian 配置
+OBSIDIAN_VAULT="$HOME/Obsidian"
+
+# 导出配置
+EXPORT_FORMAT="enhanced"  # basic 或 enhanced
+EXPORT_DIR="${OBSIDIAN_VAULT}/Claude-Chats"
+
+# 监控配置
+MONITOR_INTERVAL=300  # 检查间隔（秒）
+MONITOR_ENABLED=true
+
+# 清理配置
+CLEANUP_DAYS=30  # 保留天数
+CLEANUP_ENABLED=true
+
+# 日志配置
+LOG_LEVEL="INFO"  # DEBUG, INFO, WARNING, ERROR
+LOG_RETENTION_DAYS=7
+
+# 工具路径（安装后自动设置）
+# TOOLS_DIR="$HOME/claude-chat-tools"
+# SCRIPTS_DIR="$HOME/claude-chat-tools"

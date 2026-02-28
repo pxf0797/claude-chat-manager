@@ -128,8 +128,8 @@ jobs:
 
     - name: Test scripts
       run: |
-        chmod +x *.sh
-        ./test-chat-tools.sh
+        find . -name "*.sh" -exec chmod +x {} \;
+        ./scripts/utils/test-chat-tools.sh
 ```
 
 ## 配置 GitHub Pages（可选）

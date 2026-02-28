@@ -36,20 +36,29 @@ claude-chat-manager/
 ├── LICENSE                            # MIT许可证
 ├── .gitignore                         # Git忽略配置
 ├── scripts/                           # 脚本目录
-│   ├── view-chats.sh                  # 查看工具
-│   ├── chat-explorer.sh               # 交互式浏览器
-│   ├── export-to-obsidian.sh          # 基础导出工具
-│   ├── export-enhanced.sh             # 增强导出工具
-│   ├── chat-monitor.sh                # 自动监控工具
-│   ├── install-chat-tools.sh          # 安装脚本
-│   ├── test-chat-tools.sh             # 测试脚本
-│   └── init-repo.sh                   # 仓库初始化工具
+│   ├── view/                          # 查看功能
+│   │   ├── view-chats.sh              # 查看工具
+│   │   └── chat-explorer.sh           # 交互式浏览器
+│   ├── export/                        # 导出功能
+│   │   ├── export-to-obsidian.sh      # 基础导出工具
+│   │   └── export-enhanced.sh         # 增强导出工具
+│   ├── monitor/                       # 监控功能
+│   │   └── chat-monitor.sh            # 自动监控工具
+│   └── utils/                         # 工具脚本
+│       ├── install-chat-tools.sh      # 安装脚本
+│       ├── test-chat-tools.sh         # 测试脚本
+│       └── init-repo.sh               # 仓库初始化工具
 ├── docs/                              # 文档目录
 │   ├── Claude-Code-Chat-Management-Scheme.md  # 完整方案文档
 │   ├── Quick-Start-Guide.md           # 快速开始指南
 │   └── GITHUB_SETUP.md                # GitHub设置指南
-├── examples/                          # 示例目录（预留）
-└── templates/                         # 模板目录（预留）
+├── config/                            # 配置文件模板
+│   └── claude-chat-tools.conf.example # 配置示例
+├── examples/                          # 示例目录
+│   └── basic-usage.sh                 # 基本使用示例
+├── templates/                         # 模板目录
+│   └── obsidian-export-template.md    # Obsidian导出模板
+└── init-repo.sh                       # 仓库初始化脚本（根目录备份）
 ```
 
 ## 🚀 快速开始
@@ -70,8 +79,8 @@ claude-chat-manager/
 
 2. **运行安装脚本**
    ```bash
-   chmod +x scripts/*.sh
-   ./scripts/install-chat-tools.sh install
+   find scripts -name "*.sh" -exec chmod +x {} \;
+   ./scripts/utils/install-chat-tools.sh install
    ```
 
 3. **配置环境变量**
@@ -84,7 +93,7 @@ claude-chat-manager/
 
 4. **测试安装**
    ```bash
-   ./scripts/test-chat-tools.sh
+   ./scripts/utils/test-chat-tools.sh
    ```
 
 ## 📖 使用指南
@@ -115,7 +124,7 @@ claude-export --date $(date "+%Y-%m-%d")
 claude-export --range 2024-01-01 2024-01-15
 
 # 使用增强导出（推荐）
-./scripts/export-enhanced.sh --recent 10
+./scripts/export/export-enhanced.sh --recent 10
 ```
 
 ### 自动监控
@@ -299,7 +308,7 @@ tags: [claude/conversation, date/2024-01-15, topic/claude-code]
 export CLAUDE_DEBUG=true
 
 # 查看详细错误信息
-./scripts/chat-monitor.sh once 2>&1 | tee debug.log
+./scripts/monitor/chat-monitor.sh once 2>&1 | tee debug.log
 
 # 检查日志文件
 tail -f ~/.claude-chat-monitor.log

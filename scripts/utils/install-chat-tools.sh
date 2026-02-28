@@ -138,11 +138,11 @@ copy_scripts() {
 
     # 脚本列表
     local scripts=(
-        "view-chats.sh"
-        "chat-explorer.sh"
-        "export-to-obsidian.sh"
-        "export-enhanced.sh"
-        "chat-monitor.sh"
+        "../view/view-chats.sh"
+        "../view/chat-explorer.sh"
+        "../export/export-to-obsidian.sh"
+        "../export/export-enhanced.sh"
+        "../monitor/chat-monitor.sh"
         "install-chat-tools.sh"
     )
 

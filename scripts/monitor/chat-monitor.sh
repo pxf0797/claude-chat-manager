@@ -4,7 +4,7 @@
 # 配置
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OBSIDIAN_VAULT="${CLAUDE_OBSIDIAN_VAULT:-$HOME/Obsidian}"
-EXPORT_SCRIPT="$SCRIPT_DIR/export-enhanced.sh"
+EXPORT_SCRIPT="$SCRIPT_DIR/../export/export-enhanced.sh"
 LAST_CHECK_FILE="$HOME/.claude-chat-last-check"
 LOG_FILE="$HOME/.claude-chat-monitor.log"
 STATE_FILE="$HOME/.claude-chat-monitor.state"
