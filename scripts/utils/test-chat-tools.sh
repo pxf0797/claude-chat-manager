@@ -1,12 +1,14 @@
 #!/bin/bash
 # test-chat-tools.sh - 测试Claude聊天管理工具
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 echo "=== Claude Chat Tools 测试 ==="
 echo ""
 
 # 检查工具是否存在
 echo "🔧 检查工具脚本..."
-scripts=("../view/view-chats.sh" "../view/chat-explorer.sh" "../export/export-to-obsidian.sh" "../export/export-enhanced.sh" "../monitor/chat-monitor.sh")
+scripts=("$SCRIPT_DIR/../view/view-chats.sh" "$SCRIPT_DIR/../view/chat-explorer.sh" "$SCRIPT_DIR/../export/export-to-obsidian.sh" "$SCRIPT_DIR/../export/export-enhanced.sh" "$SCRIPT_DIR/../monitor/chat-monitor.sh")
 missing=0
 
 for script in "${scripts[@]}"; do
@@ -58,7 +60,7 @@ fi
 echo ""
 echo "🚀 快速测试..."
 echo "1. 测试查看功能:"
-../view/view-chats.sh 2>&1 | head -10
+"$SCRIPT_DIR/../view/view-chats.sh" 2>&1 | head -10
 
 echo ""
 echo "2. 测试导出功能（模拟）:"
