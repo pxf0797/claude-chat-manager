@@ -1,0 +1,95 @@
+# Log files
+*.log
+*.log.*
+logs/
+log/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# System files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# User configuration files
+claude-chat-tools.conf
+.claude-chat-*
+.config/
+settings.json
+
+# Obsidian export cache
+.cache/
+exports/
+backups/
+
+# Test outputs
+test-output/
+tmp/
+temp/
+
+# Installation artifacts
+claude-chat-tools/
+bin/
+.local/
+
+# macOS specific
+.AppleDouble
+.LSOverride
+Icon
+.Spotlight-V100
+.Trashes
+
+# Linux specific
+.history/
+.*.un~
+
+# Windows specific
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.sln.docstates
+
+# Project specific
+# Ignore exported files (user data)
+# Exports/
+# Note: Uncomment if you want to ignore exported Obsidian files
+
+# Development files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Documentation auto-generated
+_site/
+.sass-cache/
+.jekyll-cache/
