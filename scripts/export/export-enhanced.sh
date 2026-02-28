@@ -98,7 +98,14 @@ generate_conversation() {
     echo "🔍 处理会话: $session_id"
 
     # 提取第一条用户消息
-    local first_message=$(jq -r 'select(.type=="user") | .message.content[0].text' "$file" 2>/dev/null | head -1 || echo "无标题对话")
+    local first_message=$(jq -r '
+        select(.type=="user") |
+        if .message.content | type == "string" then
+            .message.content
+        else
+            (.message.content[] | select(.type=="text") | .text) // ""
+        end
+    ' "$file" 2>/dev/null | head -1 || echo "无标题对话")
     local topic=$(extract_topic "$first_message")
     local project=$(jq -r '.project' "$file" 2>/dev/null | head -1 | sed 's/[^a-zA-Z0-9_-]//g' || echo "default")
 
@@ -113,7 +120,14 @@ generate_conversation() {
     echo "  文件: $(basename "$md_file")"
 
     # 提取所有标签
-    local all_tags=$(jq -r 'select(.type=="user") | .message.content[0].text' "$file" 2>/dev/null | grep -o "#[a-zA-Z0-9_-]\+" | sort | uniq | tr '\n' ',' | sed 's/#//g' | sed 's/,$//')
+    local all_tags=$(jq -r '
+        select(.type=="user") |
+        if .message.content | type == "string" then
+            .message.content
+        else
+            (.message.content[] | select(.type=="text") | .text) // ""
+        end
+    ' "$file" 2>/dev/null | grep -o "#[a-zA-Z0-9_-]\+" | sort | uniq | tr '\n' ',' | sed 's/#//g' | sed 's/,$//')
 
     # 创建Frontmatter
     cat > "$md_file" << EOF
@@ -169,26 +183,36 @@ EOF
 # 计算对话时长
 calculate_duration() {
     local file="$1"
-    local timestamps=$(jq -r 'select(.timestamp) | .timestamp' "$file" 2>/dev/null)
 
-    if [ -n "$timestamps" ]; then
-        local first=$(echo "$timestamps" | sort -n | head -1)
-        local last=$(echo "$timestamps" | sort -n | tail -1)
+    # 使用jq计算持续时间，处理ISO时间戳和数字时间戳
+    local duration=$(jq -r '
+        [select(.timestamp) | .timestamp] |
+        if length > 0 then
+            map(
+                if type == "string" then
+                    fromdateiso8601? // (split(".")[0] + "Z" | fromdateiso8601?) // 0
+                else
+                    . / 1000  # 假设是毫秒时间戳
+                end
+            ) |
+            (max - min) | floor
+        else
+            empty
+        end
+    ' "$file" 2>/dev/null)
 
-        if [ -n "$first" ] && [ -n "$last" ]; then
-            local duration=$(( (last - first) / 1000 ))
-            local minutes=$(( duration / 60 ))
-            local seconds=$(( duration % 60 ))
+    if [ -n "$duration" ] && [ "$duration" -gt 0 ]; then
+        local minutes=$(( duration / 60 ))
+        local seconds=$(( duration % 60 ))
 
-            if [ $minutes -eq 0 ]; then
-                echo "${seconds}秒"
-            else
-                echo "${minutes}分${seconds}秒"
-            fi
+        if [ $minutes -eq 0 ]; then
+            echo "${seconds}秒"
+        else
+            echo "${minutes}分${seconds}秒"
         fi
+    else
+        echo "未知"
     fi
-
-    echo "未知"
 }
 
 # 添加对话内容
@@ -198,6 +222,31 @@ add_conversation_content() {
 
     jq -r '
         select(.type=="user" or .type=="assistant") |
+        def get_content:
+          if .message.content | type == "string" then
+            .message.content
+          else
+            reduce .message.content[] as $item ("";
+              . + (if $item.type == "text" then
+                $item.text // ""
+              elif $item.type == "thinking" then
+                $item.thinking // ""
+              elif $item.type == "tool_use" then
+                "使用了工具: " + ($item.name // "unknown") +
+                (if $item.input and ($item.input | type == "object") then
+                  " - " + ($item.input.command // ($item.input | tostring | sub("^\\{\"command\":\""; "") | sub("\".*"; "") | sub("^\\{"; "") | sub("\\}$"; "")))
+                else
+                  ""
+                end)
+              elif $item.type == "tool_result" then
+                "工具结果: " + ($item.content // ($item | tostring | .[0:200]))
+              else
+                ""
+              end) + "\n"
+            )
+          end;
+        def format_time:
+          (.timestamp | fromdateiso8601? // (split(".")[0] + "Z" | fromdateiso8601?) | strftime("%H:%M:%S")) // "??:??:??";
         if .type == "user" then
             "\n## 👤 用户\n"
         else

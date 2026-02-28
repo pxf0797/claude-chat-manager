@@ -66,7 +66,14 @@ export_chat() {
     # 提取第一条用户消息作为标题
     local title=""
     if command -v jq &> /dev/null; then
-        title=$(jq -r 'select(.type=="user") | .message.content[0].text' "$file" 2>/dev/null | head -1)
+        title=$(jq -r '
+            select(.type=="user") |
+            if .message.content | type == "string" then
+                .message.content
+            else
+                (.message.content[] | select(.type=="text") | .text) // ""
+            end
+        ' "$file" 2>/dev/null | head -1)
     fi
 
     # 清理标题（移除特殊字符，限制长度）
@@ -111,13 +118,38 @@ EOF
     if command -v jq &> /dev/null; then
         jq -r '
             select(.type=="user" or .type=="assistant") |
+            def get_content:
+              if .message.content | type == "string" then
+                .message.content
+              else
+                reduce .message.content[] as $item ("";
+                  . + (if $item.type == "text" then
+                    $item.text // ""
+                  elif $item.type == "thinking" then
+                    $item.thinking // ""
+                  elif $item.type == "tool_use" then
+                    "使用了工具: " + ($item.name // "unknown") +
+                    (if $item.input and ($item.input | type == "object") then
+                      " - " + ($item.input.command // ($item.input | tostring | sub("^\\{\"command\":\""; "") | sub("\".*"; "") | sub("^\\{"; "") | sub("\\}$"; "")))
+                    else
+                      ""
+                    end)
+                  elif $item.type == "tool_result" then
+                    "工具结果: " + ($item.content // ($item | tostring | .[0:200]))
+                  else
+                    ""
+                  end) + "\n"
+                )
+              end;
+            def format_time:
+              (.timestamp | fromdateiso8601? // (split(".")[0] + "Z" | fromdateiso8601?) | strftime("%H:%M:%S")) // "??:??:??";
             if .type == "user" then
                 "## 👤 用户\n"
             else
                 "## 🤖 Claude\n"
             end +
-            "**时间**: " + (.timestamp|strftime("%H:%M:%S")) + "\n\n" +
-            (.message.content[0].text? // .message.content[0].thinking? // "") + "\n\n" +
+            "**时间**: " + format_time + "\n\n" +
+            (get_content | sub("\n+$"; "")) + "\n\n" +
             "---\n"
         ' "$file" >> "$md_file" 2>/dev/null
     else
