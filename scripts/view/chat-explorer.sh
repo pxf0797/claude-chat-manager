@@ -31,8 +31,21 @@ source_chat() {
     local file="$1"
     local session_id=$(basename "$file" .jsonl)
 
-    print_header "查看会话: $session_id"
-    echo "文件: $file"
+    # 显示短ID和完整ID
+    short_id="${session_id:0:8}...${session_id: -8}"
+
+    # 提取项目名
+    relative_path="${file#$PROJECTS_DIR/}"
+    if [[ "$relative_path" == */* ]]; then
+        project_name="${relative_path%%/*}"
+        display_path="$project_name/$(basename "$file")"
+    else
+        display_path=$(basename "$file")
+    fi
+
+    print_header "查看会话: $short_id"
+    echo "完整ID: $session_id"
+    echo "文件: $display_path"
     echo "大小: $(ls -lh "$file" | awk '{print $5}')"
     echo "修改时间: $(date -r "$file" '+%Y-%m-%d %H:%M:%S')"
     echo ""
@@ -92,21 +105,38 @@ list_sessions() {
     echo "按时间排序（最新在前）："
     echo ""
 
-    find "$PROJECTS_DIR" -name "*.jsonl" -exec ls -lt {} + 2>/dev/null | \
-        while read line; do
-            # 解析ls输出
-            file=$(echo "$line" | awk '{print $9}')
-            date_part=$(echo "$line" | awk '{print $6" "$7" "$8}')
-            size=$(echo "$line" | awk '{print $5}')
-
-            if [ -n "$file" ]; then
+    # 使用stat获取文件修改时间并排序（最新在前）
+    find "$PROJECTS_DIR" -name "*.jsonl" -type f -exec stat -f "%m %N" {} \; 2>/dev/null | \
+        sort -rn | \
+        while read -r timestamp file; do
+            if [ -f "$file" ]; then
+                # 获取文件信息
                 session_id=$(basename "$file" .jsonl)
-                echo "🆔 ${session_id:0:12}... | 📅 $date_part | 📏 $size | 📍 $file"
+                mod_time=$(date -r "$file" '+%Y-%m-%d %H:%M' 2>/dev/null || stat -f "%Sm" -t "%Y-%m-%d %H:%M" "$file" 2>/dev/null)
+                size=$(ls -lh "$file" | awk '{print $5}' 2>/dev/null)
+
+                # 提取项目名（文件路径中PROJECTS_DIR之后的部分）
+                relative_path="${file#$PROJECTS_DIR/}"
+                # 如果路径包含斜杠，则第一部分是项目名
+                if [[ "$relative_path" == */* ]]; then
+                    project_name="${relative_path%%/*}"
+                    display_path="$project_name/$(basename "$file")"
+                else
+                    display_path=$(basename "$file")
+                fi
+
+                # 显示会话ID（前8和后8字符，节省空间）
+                short_id="${session_id:0:8}...${session_id: -8}"
+                echo "🆔 $short_id"
+                echo "   完整ID: $session_id"
+                echo "   📅 $mod_time | 📏 $size | 📍 $display_path"
+                echo ""
             fi
         done | head -20
 
     echo ""
     echo "共找到 $(find "$PROJECTS_DIR" -name "*.jsonl" 2>/dev/null | wc -l) 个会话"
+    echo "提示：输入会话ID的前几个字符即可查看对应会话"
 }
 
 list_projects() {
@@ -170,9 +200,20 @@ search_content() {
         session_id=$(basename "$file" .jsonl)
         date_str=$(date -r "$file" '+%Y-%m-%d %H:%M')
 
-        # 显示匹配行
-        echo "🔸 [$count] $session_id ($date_str)"
-        echo "   文件: $file"
+        # 提取项目名
+        relative_path="${file#$PROJECTS_DIR/}"
+        if [[ "$relative_path" == */* ]]; then
+            project_name="${relative_path%%/*}"
+            display_path="$project_name/$(basename "$file")"
+        else
+            display_path=$(basename "$file")
+        fi
+
+        # 显示短ID和完整ID
+        short_id="${session_id:0:8}...${session_id: -8}"
+        echo "🔸 [$count] $short_id"
+        echo "   完整ID: $session_id"
+        echo "   📅 $date_str | 📍 $display_path"
 
         # 显示匹配内容（前2个匹配）
         matches=$(grep -o ".{0,50}$keyword.{0,50}" "$file" 2>/dev/null | head -2)
